@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <title>Registrace – CHRONO</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="auth-body">
+<div class="auth-container">
+    <h2>Registrace</h2>
+    <form method="post">
+        <input name="username" placeholder="Uživatelské jméno" required>
+        <input name="email" type="email" placeholder="E-mail" required>
+        <input name="password" type="password" placeholder="Heslo" required>
+        <button type="submit">Registrovat</button>
+    </form>
+    <p>Máte účet? <a href="{{ url_for('auth.login') }}">Přihlaste se</a></p>
+</div>
+</body>
+</html>

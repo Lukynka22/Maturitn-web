@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <title>Můj účet – CHRONO</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<nav class="navbar">
+    <div class="logo">CHRONO</div>
+    <ul>
+        <li><a href="{{ url_for('main.index') }}">Domů</a></li>
+        <li><a href="#">Hodinky</a></li>
+        <li><a href="#">O nás</a></li>
+        <li><a href="{{ url_for('auth.logout') }}">Odhlásit se</a></li>
+    </ul>
+</nav>
+
+<div class="account-container">
+    <h2>Vítej zpět, {{ user.username }} 👋</h2>
+    <p><strong>E-mail:</strong> {{ user.email }}</p>
+    <p>Tady budeš mít přehled o svém účtu, objednávkách a nastavení.</p>
+</div>
+</body>
+</html>

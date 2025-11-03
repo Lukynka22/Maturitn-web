@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <title>O nás – CHRONO</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<nav class="navbar">
+    <div class="logo">CHRONO</div>
+    <ul>
+        <li><a href="{{ url_for('main.index') }}">Domů</a></li>
+        <li><a href="#">Hodinky</a></li>
+        <li><a href="{{ url_for('auth.account') }}">Účet</a></li>
+        <li><a href="{{ url_for('main.about') }}">O nás</a></li>
+    </ul>
+</nav>
+
+<div class="about-container">
+    <h2>O nás</h2>
+    <p>
+        Vítejte v <strong>CHRONO</strong> — českém obchodě pro všechny milovníky hodinek.
+        Zaměřujeme se na kvalitní, elegantní a precizní časomíry, které spojují styl i funkčnost.
+        Naším cílem je nabídnout zákazníkům výběr těch nejlepších značek a pomoci jim najít hodinky,
+        které dokonale podtrhnou jejich osobnost.
+    </p>
+
+    <h3>Kontakt</h3>
+    <div class="contact-info">
+        <p><strong>Telefon:</strong> 730 194 675</p>
+        <p><strong>Adresa:</strong> Jana Palacha 1840, Kladno</p>
+        <p><strong>E-mail:</strong> <a href="mailto:CHRONO@gmail.com">CHRONO@gmail.com</a></p>
+    </div>
+</div>
+</body>
+</html>

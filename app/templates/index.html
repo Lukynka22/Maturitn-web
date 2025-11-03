@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <title>CHRONO</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<nav class="navbar">
+    <div class="logo">CHRONO</div>
+    <ul>
+        <li><a href="#">Hodinky</a></li>
+        <li><a href="{{ url_for('main.about') }}">O nás</a></li>
+        <li><a href="{{ url_for('auth.login') }}">Účet</a></li>
+    </ul>
+</nav>
+
+<div class="slider">
+    <div class="slides">
+        <img src="https://images.unsplash.com/photo-1503387762-592deb58ef4e" alt="Watch 1">
+<img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30" alt="Watch 2">
+<img src="https://images.unsplash.com/photo-1490367532201-b9bc1dc483f6" alt="Watch 3">
+
+    </div>
+</div>
+</body>
+</html>

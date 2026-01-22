@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <title>Hodinky</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<nav class="navbar">
+    <div class="logo">CHRONO</div>
+<ul>
+    <li><a href="{{ url_for('main.index') }}">Domů</a></li>
+    <li><a href="{{ url_for('main.hodinky') }}">Hodinky</a></li>
+    <li><a href="{{ url_for('main.about') }}">O nás</a></li>
+
+    {% if session.get('user_id') %}
+        <li class="nav-user">
+            <a href="{{ url_for('auth.account') }}">
+                {{ session.get('username') }}
+            </a>
+        </li>
+        <li><a href="{{ url_for('cart.kosik') }}" class="cart-link">Košík</a></li>
+        <li><a href="{{ url_for('auth.logout') }}">Odhlásit</a></li>
+    {% else %}
+        <li><a href="{{ url_for('auth.login') }}">Přihlásit se</a></li>
+    {% endif %}
+</ul>
+
+</nav>
+<!-- FILTRY -->
+<div class="filters">
+    <button>Komise</button>
+    <button>Limited Editions</button>
+    <button>Microbrands</button>
+    <button>Independent Watchmakers</button>
+    <button>Independent Brands</button>
+</div>
+
+<!-- GRID HODINEK -->
+<div class="watch-grid">
+
+<div class="watch-grid">
+    {% for produkt in produkty %}
+    <div class="watch-card">
+        <img src="{{ url_for('static', filename=produkt.image) }}">
+        <h3>{{ produkt.nazev }}</h3>
+        <p class="price">{{ produkt.cena }} Kč</p>
+        <a href="{{ url_for('cart.add_to_cart', product_id=produkt.id) }}">
+    Přidat do košíku
+</a>
+    </div>
+    {% endfor %}
+</div>
+
+
+</div>
+</body>
+</html>

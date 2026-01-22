@@ -8,12 +8,23 @@
 <body>
 <nav class="navbar">
     <div class="logo">CHRONO</div>
-    <ul>
-        <li><a href="{{ url_for('main.index') }}">Domů</a></li>
-        <li><a href="#">Hodinky</a></li>
-        <li><a href="{{ url_for('auth.account') }}">Účet</a></li>
-        <li><a href="{{ url_for('main.about') }}">O nás</a></li>
-    </ul>
+<ul>
+    <li><a href="{{ url_for('main.index') }}">Domů</a></li>
+    <li><a href="{{ url_for('main.hodinky') }}">Hodinky</a></li>
+    <li><a href="{{ url_for('main.about') }}">O nás</a></li>
+
+    {% if session.get('user_id') %}
+        <li class="nav-user">
+            <a href="{{ url_for('auth.account') }}">
+                {{ session.get('username') }}
+            </a>
+        </li>
+        <li><a href="{{ url_for('cart.kosik') }}" class="cart-link">Košík</a></li>
+        <li><a href="{{ url_for('auth.logout') }}">Odhlásit</a></li>
+    {% else %}
+        <li><a href="{{ url_for('auth.login') }}">Přihlásit se</a></li>
+    {% endif %}
+</ul>
 </nav>
 
 <div class="about-container">

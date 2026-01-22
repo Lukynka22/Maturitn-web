@@ -8,12 +8,23 @@
 <body>
 <nav class="navbar">
     <div class="logo">CHRONO</div>
-    <ul>
-        <li><a href="{{ url_for('main.index') }}">Domů</a></li>
-        <li><a href="#">Hodinky</a></li>
-        <li><a href="#">O nás</a></li>
-        <li><a href="{{ url_for('auth.logout') }}">Odhlásit se</a></li>
-    </ul>
+<ul>
+    <li><a href="{{ url_for('main.index') }}">Domů</a></li>
+    <li><a href="{{ url_for('main.hodinky') }}">Hodinky</a></li>
+    <li><a href="{{ url_for('main.about') }}">O nás</a></li>
+
+    {% if session.get('user_id') %}
+        <li class="nav-user">
+            <a href="{{ url_for('auth.account') }}">
+                {{ session.get('username') }}
+            </a>
+        </li>
+        <li><a href="{{ url_for('cart.kosik') }}" class="cart-link">Košík</a></li>
+        <li><a href="{{ url_for('auth.logout') }}">Odhlásit</a></li>
+    {% else %}
+        <li><a href="{{ url_for('auth.login') }}">Přihlásit se</a></li>
+    {% endif %}
+</ul>
 </nav>
 
 <div class="account-container">
@@ -21,5 +32,41 @@
     <p><strong>E-mail:</strong> {{ user.email }}</p>
     <p>Tady budeš mít přehled o svém účtu, objednávkách a nastavení.</p>
 </div>
+
+<h3 class="orders-title">Moje objednávky</h3>
+
+{% if user.orders %}
+    <div class="orders-list">
+        {% for order in user.orders %}
+            <div class="order-card">
+
+                <div class="order-header">
+                    <span class="invoice">
+                        Faktura #{{ "%04d"|format(order.id) }}
+                    </span>
+                    <span class="status paid">Zaplaceno</span>
+                </div>
+
+                <div class="order-body">
+                    <p><strong>Celková částka:</strong> {{ order.total_price }} Kč</p>
+                </div>
+
+                <!-- ⬇⬇⬇ TADY MUSÍ BÝT ODKAZ ⬇⬇⬇ -->
+                <div class="order-footer">
+                    <span>CHRONO</span>
+                    <a href="{{ url_for('cart.invoice', order_id=order.id) }}"
+                       class="invoice-link">
+                        Zobrazit fakturu
+                    </a>
+                </div>
+
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p>Zatím nemáš žádné objednávky.</p>
+{% endif %}
+
+
 </body>
 </html>

@@ -8,20 +8,39 @@
 <body>
 <nav class="navbar">
     <div class="logo">CHRONO</div>
-    <ul>
-        <li><a href="#">Hodinky</a></li>
-        <li><a href="{{ url_for('main.about') }}">O nás</a></li>
-        <li><a href="{{ url_for('auth.login') }}">Účet</a></li>
-    </ul>
+<ul>
+    <li><a href="{{ url_for('main.hodinky') }}">Hodinky</a></li>
+    <li><a href="{{ url_for('main.about') }}">O nás</a></li>
+
+    {% if session.get('user_id') %}
+        <li class="nav-user">
+            <a href="{{ url_for('auth.account') }}">
+                {{ session.get('username') }}
+            </a>
+        </li>
+        <li><a href="{{ url_for('cart.kosik') }}" class="cart-link">Košík</a></li>
+        <li><a href="{{ url_for('auth.logout') }}">Odhlásit</a></li>
+    {% else %}
+        <li><a href="{{ url_for('auth.login') }}">Přihlásit se</a></li>
+    {% endif %}
+</ul>
+
 </nav>
 
-<div class="slider">
+<!-- HERO SLIDER -->
+<section class="hero">
     <div class="slides">
-        <img src="https://images.unsplash.com/photo-1503387762-592deb58ef4e" alt="Watch 1">
-<img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30" alt="Watch 2">
-<img src="https://images.unsplash.com/photo-1490367532201-b9bc1dc483f6" alt="Watch 3">
-
+        <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1503387762-592deb58ef4e')"></div>
+        <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1523275335684-37898b6baf30')"></div>
+        <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1490367532201-b9bc1dc483f6')"></div>
     </div>
-</div>
+
+    <!-- TEXT OVERLAY -->
+    <div class="hero-content">
+        <h1>Luxusní hodinky bez kompromisů</h1>
+        <p>Vybrané značky. Precizní zpracování. Nadčasový design.</p>
+        <a href="{{ url_for('main.hodinky') }}" class="hero-btn">Zobrazit hodinky</a>
+    </div>
+</section>
 </body>
 </html>

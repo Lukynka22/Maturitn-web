@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <title>Košík</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="logo">CHRONO</div>
+<ul>
+    <li><a href="{{ url_for('main.index') }}">Domů</a></li>
+    <li><a href="{{ url_for('main.hodinky') }}">Hodinky</a></li>
+    <li><a href="{{ url_for('main.about') }}">O nás</a></li>
+
+    {% if session.get('user_id') %}
+        <li class="nav-user">
+            <a href="{{ url_for('auth.account') }}">
+                {{ session.get('username') }}
+            </a>
+        </li>
+        <li><a href="{{ url_for('cart.kosik') }}" class="cart-link">Košík</a></li>
+        <li><a href="{{ url_for('auth.logout') }}">Odhlásit</a></li>
+    {% else %}
+        <li><a href="{{ url_for('auth.login') }}">Přihlásit se</a></li>
+    {% endif %}
+</ul>
+</nav>
+
+<div class="cart-container">
+    <h2>Tvůj košík</h2>
+
+    {% if items %}
+        {% set ns = namespace(total=0) %}
+
+        <table class="cart-table">
+            <tr>
+                <th>Produkt</th>
+                <th>Cena</th>
+                <th>Kusů</th>
+                <th>Celkem</th>
+                <th></th>
+            </tr>
+
+            {% for item in items %}
+                {% set subtotal = item.product.cena * item.quantity %}
+                {% set ns.total = ns.total + subtotal %}
+                <tr>
+                    <td class="product-cell">
+                        <img src="{{ url_for('static', filename=item.product.image) }}"
+                             alt="{{ item.product.nazev }}"
+                             class="cart-img">
+                        <span>{{ item.product.nazev }}</span>
+                    </td>
+                    <td>{{ item.product.cena }} Kč</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ subtotal }} Kč</td>
+                    <td>
+                        <form method="post" action="{{ url_for('cart.remove_from_cart', item_id=item.id) }}">
+                            <button type="submit" class="remove-btn">✕</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+
+            <tr>
+                <td colspan="3"><strong>Celkem</strong></td>
+                <td><strong>{{ ns.total }} Kč</strong></td>
+                <td></td>
+            </tr>
+        </table>
+    {% else %}
+        <p>Košík je prázdný.</p>
+    {% endif %}
+</div>
+
+<div class="cart-actions">
+    <a href="{{ url_for('cart.checkout') }}" class="checkout-btn">
+        Pokračovat k platbě →
+    </a>
+</div>
+
+</body>
+</html>

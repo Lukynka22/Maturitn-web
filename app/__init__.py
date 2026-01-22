@@ -2,6 +2,12 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from app.config import DATABASE, SECRET_KEY
 
+
+
+
+
+
+
 db = SQLAlchemy()
 
 def create_app():
@@ -13,7 +19,10 @@ def create_app():
 
     from app.views.cesty import main_bp
     from app.views.render import auth_bp
+    from app.cart.routes import cart_bp
+
     app.register_blueprint(main_bp)
     app.register_blueprint(auth_bp)
+    app.register_blueprint(cart_bp)
 
     return app

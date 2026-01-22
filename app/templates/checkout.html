@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <title>Platba</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="logo">CHRONO</div>
+</nav>
+
+<div class="checkout-container">
+    <h2>Zaplacení objednávky</h2>
+
+    <p class="total-price">Celkem k zaplacení: <strong>{{ total }} Kč</strong></p>
+
+    <form method="post" class="payment-form">
+
+    <input type="text"
+           name="card_number"
+           placeholder="Číslo karty (16 číslic)"
+           maxlength="16"
+           required>
+
+    <div class="card-row">
+        <input type="number"
+               name="exp_month"
+               placeholder="MM"
+               min="1"
+               max="12"
+               required>
+
+        <input type="number"
+               name="exp_year"
+               placeholder="RRRR"
+               min="2024"
+               required>
+
+        <input type="text"
+               name="cvc"
+               placeholder="CVC"
+               maxlength="3"
+               required>
+    </div>
+
+    <button type="submit" class="pay-btn">
+        Zaplatit {{ total }} Kč
+    </button>
+
+</form>
+</div>
+
+</body>
+</html>

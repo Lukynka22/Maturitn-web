@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body class="auth-body">
+
 <div class="auth-container">
     <h2>Registrace</h2>
     <form method="post">
@@ -15,6 +16,7 @@
         <button type="submit">Registrovat</button>
     </form>
     <p>Máte účet? <a href="{{ url_for('auth.login') }}">Přihlaste se</a></p>
+    <p>Zpět na domovskou obrazovku <a href="{{ url_for('main.index') }}">Domu</a></p>
 </div>
 </body>
 </html>

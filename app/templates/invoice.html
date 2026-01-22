@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <title>Faktura #{{ "%04d"|format(order.id) }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="invoice-container">
+
+    <div class="invoice-header">
+        <h1>FAKTURA</h1>
+        <span>#{{ "%04d"|format(order.id) }}</span>
+    </div>
+
+    <div class="invoice-info">
+        <div>
+            <strong>Dodavatel:</strong><br>
+            CHRONO<br>
+            Luxusní hodinky<br>
+            IČO: 00000000
+        </div>
+
+        <div>
+            <strong>Odběratel:</strong><br>
+            {{ order.user.username }}<br>
+            {{ order.user.email }}
+        </div>
+    </div>
+
+    <table class="invoice-table">
+        <tr>
+            <th>Popis</th>
+            <th>Cena</th>
+        </tr>
+        <tr>
+            <td>Objednávka CHRONO</td>
+            <td>{{ order.total_price }} Kč</td>
+        </tr>
+        <tr class="total-row">
+            <td>Celkem</td>
+            <td>{{ order.total_price }} Kč</td>
+        </tr>
+    </table>
+
+    <div class="invoice-footer">
+        <p>Faktura je plně uhrazena.</p>
+        <p>Děkujeme za nákup u CHRONO.</p>
+    </div>
+
+</div>
+
+</body>
+</html>

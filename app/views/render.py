@@ -1,14 +1,15 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from app import db
 from werkzeug.security import generate_password_hash, check_password_hash
+from app.models import User
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(50), unique=True, nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(200), nullable=False)
+
+
+
+
+
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -62,3 +63,6 @@ def logout():
     session.clear()
     flash('Odhlášení proběhlo úspěšně.', 'info')
     return redirect(url_for('main.index'))
+
+
+

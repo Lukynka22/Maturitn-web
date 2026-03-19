@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div class="breadcrumb">
+    {% for name, url in breadcrumbs %}
+        {% if url %}
+            <a href="{{ url }}">{{ name }}</a>
+        {% else %}
+            <span>{{ name }}</span>
+        {% endif %}
+
+        {% if not loop.last %}
+            <span class="sep">›</span>
+        {% endif %}
+    {% endfor %}
+</div>
+</body>
+</html>

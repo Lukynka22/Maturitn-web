@@ -27,13 +27,37 @@
 </ul>
 
 </nav>
+{% include "components/breadcrumb.html" %}
+<!-- VYHLEDÁVÁNÍ -->
+<div class="search-bar">
+    <form method="GET" action="{{ url_for('main.hodinky') }}">
+        <input type="text" name="q" placeholder="Hledat hodinky..." value="{{ request.args.get('q', '') }}">
+        <button type="submit">Hledat</button>
+    </form>
+</div>
 <!-- FILTRY -->
 <div class="filters">
-    <button>Komise</button>
-    <button>Limited Editions</button>
-    <button>Microbrands</button>
-    <button>Independent Watchmakers</button>
-    <button>Independent Brands</button>
+
+
+
+<a href="{{ url_for('main.hodinky', category='Komise') }}" class="filter-btn">
+Komise
+</a>
+
+<a href="{{ url_for('main.hodinky', category='Limited') }}" class="filter-btn">
+Limited Editions
+</a>
+
+<a href="{{ url_for('main.hodinky', category='Microbrands') }}" class="filter-btn">
+Microbrands
+</a>
+
+<a href="{{ url_for('main.hodinky', category='Independent') }}" class="filter-btn">
+Independent Watchmakers
+
+    <a href="{{ url_for('main.hodinky') }}" class="filter-btn">Vše</a>
+</a>
+
 </div>
 
 <!-- GRID HODINEK -->
@@ -41,18 +65,43 @@
 
 <div class="watch-grid">
     {% for produkt in produkty %}
-    <div class="watch-card">
-        <img src="{{ url_for('static', filename=produkt.image) }}">
-        <h3>{{ produkt.nazev }}</h3>
-        <p class="price">{{ produkt.cena }} Kč</p>
-        <a href="{{ url_for('cart.add_to_cart', product_id=produkt.id) }}">
-    Přidat do košíku
-</a>
-    </div>
+<div class="watch-card" data-category="{{ produkt.kategorie }}">
+    <img src="{{ url_for('static', filename=produkt.image) }}">
+    <h3>{{ produkt.nazev }}</h3>
+    <p class="price">{{ produkt.cena }} Kč</p>
+    <a href="{{ url_for('cart.add_to_cart', product_id=produkt.id) }}">
+        Přidat do košíku
+    </a>
+</div>
     {% endfor %}
 </div>
 
 
 </div>
+
+<script>
+
+function filterWatches(category){
+
+    const cards = document.querySelectorAll(".watch-card");
+
+    cards.forEach(card => {
+
+        if(category === "all"){
+            card.style.display = "block";
+            return;
+        }
+
+        if(card.dataset.category === category){
+            card.style.display = "block";
+        }else{
+            card.style.display = "none";
+        }
+
+    });
+
+}
+
+</script>
 </body>
 </html>

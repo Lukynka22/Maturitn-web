@@ -8,28 +8,50 @@
 <body>
 <nav class="navbar">
     <div class="logo">CHRONO</div>
-<ul>
-    <li><a href="{{ url_for('main.index') }}">Domů</a></li>
-    <li><a href="{{ url_for('main.hodinky') }}">Hodinky</a></li>
-    <li><a href="{{ url_for('main.about') }}">O nás</a></li>
+    <ul>
+        <li><a href="{{ url_for('main.index') }}">Domů</a></li>
+        <li><a href="{{ url_for('main.hodinky') }}">Hodinky</a></li>
+        <li><a href="{{ url_for('main.about') }}">O nás</a></li>
 
-    {% if session.get('user_id') %}
-        <li class="nav-user">
-            <a href="{{ url_for('auth.account') }}">
-                {{ session.get('username') }}
-            </a>
-        </li>
-        <li><a href="{{ url_for('cart.kosik') }}" class="cart-link">Košík</a></li>
-        <li><a href="{{ url_for('auth.logout') }}">Odhlásit</a></li>
-    {% else %}
-        <li><a href="{{ url_for('auth.login') }}">Přihlásit se</a></li>
-    {% endif %}
-</ul>
+        {% if session.get('user_id') %}
+            <li class="nav-user">
+                <a href="{{ url_for('auth.account') }}">
+                    {% if user.avatar %}
+                        <img src="{{ url_for('static', filename='uploads/' + user.avatar) }}" alt="Profilovka" class="avatar">
+                    {% else %}
+                        <div class="avatar avatar-placeholder">👤</div>
+                    {% endif %}
+                    <span>{{ session.get('username') }}</span>
+                </a>
+            </li>
+            <li><a href="{{ url_for('cart.kosik') }}" class="cart-link">Košík</a></li>
+            <li><a href="{{ url_for('auth.logout') }}">Odhlásit</a></li>
+        {% else %}
+            <li><a href="{{ url_for('auth.login') }}">Přihlásit se</a></li>
+        {% endif %}
+    </ul>
 </nav>
 
 <div class="account-container">
     <h2>Vítej zpět, {{ user.username }} 👋</h2>
     <p><strong>E-mail:</strong> {{ user.email }}</p>
+
+    <div class="profile-section">
+        <div class="profile-avatar-wrap">
+            {% if user.avatar %}
+                <img src="{{ url_for('static', filename='uploads/' + user.avatar) }}" alt="Profilovka" class="profile-avatar">
+            {% else %}
+                <div class="profile-avatar profile-avatar-placeholder">👤</div>
+            {% endif %}
+        </div>
+
+        <form action="{{ url_for('auth.account') }}" method="POST" enctype="multipart/form-data" class="avatar-form">
+            <label for="avatar">Vyber profilovou fotku:</label>
+            <input type="file" name="avatar" id="avatar" accept="image/*" required>
+            <button type="submit">Nahrát profilovku</button>
+        </form>
+    </div>
+
     <p>Tady budeš mít přehled o svém účtu, objednávkách a nastavení.</p>
 </div>
 
@@ -51,11 +73,9 @@
                     <p><strong>Celková částka:</strong> {{ order.total_price }} Kč</p>
                 </div>
 
-                <!-- ⬇⬇⬇ TADY MUSÍ BÝT ODKAZ ⬇⬇⬇ -->
                 <div class="order-footer">
                     <span>CHRONO</span>
-                    <a href="{{ url_for('cart.invoice', order_id=order.id) }}"
-                       class="invoice-link">
+                    <a href="{{ url_for('cart.invoice', order_id=order.id) }}" class="invoice-link">
                         Zobrazit fakturu
                     </a>
                 </div>
@@ -66,7 +86,6 @@
 {% else %}
     <p>Zatím nemáš žádné objednávky.</p>
 {% endif %}
-
 
 </body>
 </html>

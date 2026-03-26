@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <title>Statistika</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="logo">CHRONO</div>
+    <ul>
+        <li><a href="{{ url_for('main.index') }}">Domů</a></li>
+        <li><a href="{{ url_for('main.hodinky') }}">Hodinky</a></li>
+        <li><a href="{{ url_for('main.statistika') }}">Statistika</a></li>
+        <li><a href="{{ url_for('main.about') }}">O nás</a></li>
+
+        {% if session.get('user_id') %}
+            <li class="nav-user">
+                <a href="{{ url_for('auth.account') }}">
+                    {{ session.get('username') }}
+                </a>
+            </li>
+            <li><a href="{{ url_for('cart.kosik') }}">Košík</a></li>
+            <li><a href="{{ url_for('auth.logout') }}">Odhlásit</a></li>
+        {% else %}
+            <li><a href="{{ url_for('auth.login') }}">Přihlásit se</a></li>
+        {% endif %}
+    </ul>
+</nav>
+
+{% include "components/breadcrumb.html" %}
+
+<div class="stats-container">
+    <h1>Statistika hodinek</h1>
+    <p>Počet hodinek podle kategorií</p>
+
+    <div class="chart-box">
+        <canvas id="categoryChart"></canvas>
+    </div>
+</div>
+
+<script>
+const labels = {{ labels|tojson }};
+const values = {{ values|tojson }};
+
+const ctx = document.getElementById('categoryChart').getContext('2d');
+
+new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: labels,
+        datasets: [{
+            label: 'Počet hodinek',
+            data: values,
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                display: true
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    precision: 0
+                }
+            }
+        }
+    }
+});
+</script>
+
+</body>
+</html>

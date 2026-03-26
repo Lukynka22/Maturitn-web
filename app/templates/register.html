@@ -9,14 +9,31 @@
 
 <div class="auth-container">
     <h2>Registrace</h2>
+
     <form method="post">
         <input name="username" placeholder="Uživatelské jméno" required>
+
         <input name="email" type="email" placeholder="E-mail" required>
-        <input name="password" type="password" placeholder="Heslo" required>
+
+        <input
+            name="password"
+            type="password"
+            placeholder="Heslo"
+            required
+            pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$"
+            title="Heslo musí obsahovat minimálně 8 znaků, velké a malé písmeno, číslo a speciální znak."
+        >
+
+        <small class="password-hint">
+            Heslo musí mít alespoň 8 znaků, obsahovat velké a malé písmeno, číslo a speciální znak.
+        </small>
+
         <button type="submit">Registrovat</button>
     </form>
+
     <p>Máte účet? <a href="{{ url_for('auth.login') }}">Přihlaste se</a></p>
     <p>Zpět na domovskou obrazovku <a href="{{ url_for('main.index') }}">Domu</a></p>
 </div>
+
 </body>
 </html>

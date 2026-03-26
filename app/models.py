@@ -5,6 +5,7 @@ class User(db.Model):
     username = db.Column(db.String(50), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(200), nullable=False)
+    avatar = db.Column(db.String(255), nullable=True)  # cesta / název profilovky
 
     cart_items = db.relationship('CartItem', backref='user', lazy=True)
 
@@ -27,7 +28,6 @@ class CartItem(db.Model):
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
 
     quantity = db.Column(db.Integer, default=1)
-
 
 
 class Order(db.Model):

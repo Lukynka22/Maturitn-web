@@ -240,6 +240,73 @@ body { margin: 0; font-family: Arial, sans-serif; background: #f4f4f4; }
 
 
 
+
+/* doruceni a placeni */
+.delivery-container,
+.checkout-container {
+    max-width: 700px;
+    margin: 120px auto 40px;
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+.delivery-form,
+.payment-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.delivery-form input,
+.delivery-form select,
+.delivery-form textarea,
+.payment-form input {
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 15px;
+}
+
+.card-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+}
+
+.checkout-btn,
+.pay-btn {
+    display: inline-block;
+    padding: 14px 20px;
+    background: black;
+    color: white;
+    text-decoration: none;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.checkout-btn:hover,
+.pay-btn:hover {
+    opacity: 0.9;
+}
+
+.delivery-summary {
+    background: #f7f7f7;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.total-price {
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+
+
 /* ===== Hodinky PAGE ===== */
 /* ZÁKLAD */
 body {

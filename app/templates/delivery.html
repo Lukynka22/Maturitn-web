@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <title>Doprava a doručení</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="logo">CHRONO</div>
+    <ul>
+        <li><a href="{{ url_for('main.index') }}">Domů</a></li>
+        <li><a href="{{ url_for('main.hodinky') }}">Hodinky</a></li>
+        <li><a href="{{ url_for('main.about') }}">O nás</a></li>
+
+        {% if session.get('user_id') %}
+            <li class="nav-user">
+                <a href="{{ url_for('auth.account') }}">
+                    {{ session.get('username') }}
+                </a>
+            </li>
+            <li><a href="{{ url_for('cart.kosik') }}" class="cart-link">Košík</a></li>
+            <li><a href="{{ url_for('auth.logout') }}">Odhlásit</a></li>
+        {% else %}
+            <li><a href="{{ url_for('auth.login') }}">Přihlásit se</a></li>
+        {% endif %}
+    </ul>
+</nav>
+
+<div class="delivery-container">
+    <h2>Doprava a doručovací údaje</h2>
+
+    <form method="post" class="delivery-form">
+
+        <input type="text" name="full_name" placeholder="Jméno a příjmení" required>
+        <input type="text" name="street" placeholder="Ulice a číslo popisné" required>
+        <input type="text" name="city" placeholder="Město" required>
+        <input type="text" name="zip_code" placeholder="PSČ" required>
+        <input type="text" name="country" placeholder="Země" value="Česká republika" required>
+        <input type="tel" name="phone" placeholder="Telefon" required>
+
+        <label for="shipping">Způsob dopravy:</label>
+        <select name="shipping" id="shipping" required>
+            <option value="">Vyber dopravu</option>
+            <option value="zasilkovna">Zásilkovna</option>
+            <option value="ppl">PPL</option>
+            <option value="dpd">DPD</option>
+            <option value="osobni_odber">Osobní odběr</option>
+        </select>
+
+        <label for="note">Poznámka k objednávce:</label>
+        <textarea name="note" id="note" rows="4" placeholder="Např. doručit po 16:00"></textarea>
+
+        <button type="submit" class="checkout-btn">
+            Pokračovat k platbě →
+        </button>
+    </form>
+</div>
+
+</body>
+</html>

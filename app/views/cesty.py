@@ -1,5 +1,11 @@
 from flask import Blueprint, render_template, request, url_for
 from app.models import Product
+
+from sqlalchemy import func
+from app.models import Product
+
+from app import db
+
 main_bp = Blueprint('main', __name__)
 
 @main_bp.route('/')
@@ -41,3 +47,31 @@ def hodinky():
         produkty=produkty,
         breadcrumbs=breadcrumbs
     )
+
+
+@main_bp.route('/statistika')
+def statistika():
+    vysledky = db.session.query(
+        Product.kategorie,
+        func.count(Product.id)
+    ).group_by(Product.kategorie).all()
+
+    labels = []
+    values = []
+
+    for kategorie, pocet in vysledky:
+        labels.append(kategorie if kategorie else "Bez kategorie")
+        values.append(pocet)
+
+    breadcrumbs = [
+        ("Domů", url_for("main.index")),
+        ("Statistika", None)
+    ]
+
+    return render_template(
+        "statistika.html",
+        labels=labels,
+        values=values,
+        breadcrumbs=breadcrumbs
+    )
+

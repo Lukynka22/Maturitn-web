@@ -1,0 +1,284 @@
+/* ====== KLIKATELNÝ OBRÁZEK ====== */
+.watch-image-clickable {
+    cursor: pointer; /* změní kurzor na ruku */
+    transition: transform 0.2s ease; /* plynulé zvětšení */
+}
+
+.watch-image-clickable:hover {
+    transform: scale(1.03); /* lehké přiblížení při hoveru */
+}
+
+
+/* ====== MODAL (POPUP OKNO) ====== */
+.modal {
+    display: none; /* defaultně skryté */
+    position: fixed; /* fixní pozice přes celou obrazovku */
+    inset: 0; /* top:0 right:0 bottom:0 left:0 */
+    z-index: 9999; /* aby bylo nad vším */
+    background: rgba(0, 0, 0, 0.65); /* tmavé pozadí */
+    padding: 40px 20px; /* odsazení */
+}
+
+/* Tohle je magie bez JS */
+.modal:target {
+    display: block; /* zobrazí se když klikneš na #modal-id */
+}
+
+
+/* ====== OBSAH MODALU ====== */
+.modal-content {
+    position: relative; /* kvůli close tlačítku */
+    background: #fff; /* bílé pozadí */
+    max-width: 800px; /* max šířka */
+    margin: 40px auto; /* centrování */
+    border-radius: 12px; /* zaoblení rohů */
+    padding: 30px; /* vnitřní odsazení */
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25); /* stín */
+}
+
+
+/* ====== ZAVÍRACÍ KŘÍŽEK ====== */
+.close-modal {
+    position: absolute; /* umístění v rohu */
+    right: 18px;
+    top: 10px;
+    font-size: 30px; /* velikost */
+    text-decoration: none; /* bez podtržení */
+    color: black;
+    font-weight: bold;
+}
+
+
+/* ====== LAYOUT MODALU ====== */
+.modal-body {
+    display: flex; /* vedle sebe */
+    gap: 30px; /* mezera */
+    align-items: flex-start; /* zarovnání nahoru */
+    flex-wrap: wrap; /* responsivní zalomení */
+}
+
+
+/* ====== OBRÁZEK V MODALU ====== */
+.modal-image {
+    flex: 1; /* zabere polovinu */
+    min-width: 240px; /* minimální šířka */
+    text-align: center; /* centrování */
+}
+
+.modal-image img {
+    max-width: 100%; /* nepřesáhne box */
+    max-height: 330px; /* max výška */
+    object-fit: contain; /* zachová poměr */
+}
+
+
+/* ====== INFO V MODALU ====== */
+.modal-info {
+    flex: 1; /* druhá polovina */
+    min-width: 260px;
+}
+
+.modal-info h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+
+/* ====== CENA ====== */
+.modal-price {
+    font-size: 24px; /* větší text */
+    font-weight: bold;
+    color: #1a1a8a; /* modrá barva */
+    margin: 12px 0;
+}
+
+
+/* ====== SKLAD ====== */
+.modal-stock {
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+
+/* ====== TLAČÍTKO KOŠÍK ====== */
+.modal-cart-btn {
+    display: inline-block;
+    padding: 10px 18px;
+    background: black;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+}
+
+.modal-cart-btn:hover {
+    background: #333; /* tmavší při hoveru */
+}
+
+
+
+/* ===================================================== */
+/* ====================== FOOTER ======================== */
+/* ===================================================== */
+
+.site-footer {
+    background: #000; /* černé pozadí */
+    color: #fff; /* bílý text */
+    margin-top: 80px; /* mezera od obsahu */
+    position: relative;
+}
+
+
+/* ====== HORNÍ ČÁST FOOTERU ====== */
+.footer-top {
+    max-width: 1300px; /* max šířka */
+    margin: 0 auto; /* centrování */
+    padding: 60px 40px; /* odsazení */
+    display: flex; /* vedle sebe */
+    justify-content: space-between; /* rozložení */
+    gap: 60px;
+    flex-wrap: wrap; /* responsivní */
+}
+
+
+/* ====== SLOUPCE ====== */
+.footer-brand,
+.footer-newsletter,
+.footer-support {
+    flex: 1;
+    min-width: 250px;
+}
+
+
+/* ====== LOGO ====== */
+.footer-logo {
+    font-size: 34px;
+    font-weight: bold;
+    margin-bottom: 25px;
+    letter-spacing: 2px;
+}
+
+
+/* ====== SOCIÁLNÍ SÍTĚ ====== */
+.footer-socials {
+    display: flex;
+    gap: 20px;
+}
+
+.footer-socials a,
+.footer-support a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.footer-socials a:hover,
+.footer-support a:hover {
+    text-decoration: underline;
+}
+
+
+/* ====== NADPISY ====== */
+.footer-newsletter h3,
+.footer-support h3 {
+    font-size: 28px;
+    margin-bottom: 25px;
+}
+
+
+/* ====== NEWSLETTER ====== */
+.newsletter-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.newsletter-form input {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid #777; /* spodní čára */
+    color: white;
+    padding: 12px 0;
+    font-size: 16px;
+    outline: none;
+}
+
+
+/* ====== TLAČÍTKO ====== */
+.newsletter-form button {
+    width: fit-content;
+    padding: 12px 24px;
+    background: #4a4a4a;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.newsletter-form button:hover {
+    background: #666;
+}
+
+
+/* ====== SEZNAM ====== */
+.footer-support ul {
+    list-style: none; /* bez puntíků */
+    padding: 0;
+    margin: 0;
+}
+
+.footer-support li {
+    margin-bottom: 14px;
+}
+
+
+/* ====== SPODNÍ LIŠTA ====== */
+.footer-bottom {
+    border-top: 1px solid #222;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    padding: 18px 30px;
+    flex-wrap: wrap;
+}
+
+.footer-bottom p {
+    margin: 0;
+    color: #ddd;
+    font-size: 14px;
+}
+
+
+/* ====== COOKIE BUTTON ====== */
+.cookie-btn {
+    color: white;
+    text-decoration: none;
+    border: 2px solid white;
+    padding: 10px 18px;
+}
+
+.cookie-btn:hover {
+    background: white;
+    color: black;
+}
+
+
+/* ====== TLAČÍTKO NAHORU ====== */
+.back-to-top {
+    position: absolute;
+    right: 30px;
+    bottom: 85px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: white;
+    color: black;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    font-weight: bold;
+}
+
+.back-to-top:hover {
+    background: #ddd;
+}

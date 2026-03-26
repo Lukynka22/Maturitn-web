@@ -14,42 +14,53 @@
 <div class="checkout-container">
     <h2>Zaplacení objednávky</h2>
 
+    {% if delivery %}
+        <div class="delivery-summary">
+            <h3>Doručovací údaje</h3>
+            <p><strong>Jméno:</strong> {{ delivery.full_name }}</p>
+            <p><strong>Adresa:</strong> {{ delivery.street }}, {{ delivery.city }}, {{ delivery.zip_code }}, {{ delivery.country }}</p>
+            <p><strong>Telefon:</strong> {{ delivery.phone }}</p>
+            <p><strong>Doprava:</strong> {{ delivery.shipping }}</p>
+            {% if delivery.note %}
+                <p><strong>Poznámka:</strong> {{ delivery.note }}</p>
+            {% endif %}
+        </div>
+    {% endif %}
+
     <p class="total-price">Celkem k zaplacení: <strong>{{ total }} Kč</strong></p>
 
     <form method="post" class="payment-form">
-
-    <input type="text"
-           name="card_number"
-           placeholder="Číslo karty (16 číslic)"
-           maxlength="16"
-           required>
-
-    <div class="card-row">
-        <input type="number"
-               name="exp_month"
-               placeholder="MM"
-               min="1"
-               max="12"
-               required>
-
-        <input type="number"
-               name="exp_year"
-               placeholder="RRRR"
-               min="2024"
-               required>
-
         <input type="text"
-               name="cvc"
-               placeholder="CVC"
-               maxlength="3"
+               name="card_number"
+               placeholder="Číslo karty (16 číslic)"
+               maxlength="16"
                required>
-    </div>
 
-    <button type="submit" class="pay-btn">
-        Zaplatit {{ total }} Kč
-    </button>
+        <div class="card-row">
+            <input type="number"
+                   name="exp_month"
+                   placeholder="MM"
+                   min="1"
+                   max="12"
+                   required>
 
-</form>
+            <input type="number"
+                   name="exp_year"
+                   placeholder="RRRR"
+                   min="2024"
+                   required>
+
+            <input type="text"
+                   name="cvc"
+                   placeholder="CVC"
+                   maxlength="3"
+                   required>
+        </div>
+
+        <button type="submit" class="pay-btn">
+            Zaplatit {{ total }} Kč
+        </button>
+    </form>
 </div>
 
 </body>

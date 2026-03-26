@@ -1,8 +1,7 @@
-from flask import Blueprint, redirect, url_for, session, flash, render_template,request
+from flask import Blueprint, redirect, url_for, session, flash, render_template, request
 from app import db
-from app.models import CartItem, Product,Order
+from app.models import CartItem, Product, Order
 from datetime import datetime
-
 
 cart_bp = Blueprint('cart', __name__, url_prefix='/cart')
 
@@ -41,6 +40,7 @@ def kosik():
     items = CartItem.query.filter_by(user_id=session['user_id']).all()
     return render_template('kosik.html', items=items)
 
+
 @cart_bp.route('/remove/<int:item_id>', methods=['POST'])
 def remove_from_cart(item_id):
     if 'user_id' not in session:
@@ -60,10 +60,45 @@ def remove_from_cart(item_id):
     return redirect(url_for('cart.kosik'))
 
 
+@cart_bp.route('/delivery', methods=['GET', 'POST'])
+def delivery():
+    if 'user_id' not in session:
+        return redirect(url_for('auth.login'))
 
+    items = CartItem.query.filter_by(user_id=session['user_id']).all()
 
+    if not items:
+        flash('Košík je prázdný', 'warning')
+        return redirect(url_for('cart.kosik'))
 
+    if request.method == 'POST':
+        full_name = request.form.get('full_name', '').strip()
+        street = request.form.get('street', '').strip()
+        city = request.form.get('city', '').strip()
+        zip_code = request.form.get('zip_code', '').strip()
+        country = request.form.get('country', '').strip()
+        phone = request.form.get('phone', '').strip()
+        shipping = request.form.get('shipping', '').strip()
+        note = request.form.get('note', '').strip()
 
+        if not full_name or not street or not city or not zip_code or not country or not phone or not shipping:
+            flash('Vyplň všechny povinné doručovací údaje', 'danger')
+            return redirect(url_for('cart.delivery'))
+
+        session['delivery_info'] = {
+            'full_name': full_name,
+            'street': street,
+            'city': city,
+            'zip_code': zip_code,
+            'country': country,
+            'phone': phone,
+            'shipping': shipping,
+            'note': note
+        }
+
+        return redirect(url_for('cart.checkout'))
+
+    return render_template('delivery.html')
 
 
 @cart_bp.route('/checkout', methods=['GET', 'POST'])
@@ -77,40 +112,44 @@ def checkout():
         flash('Košík je prázdný', 'warning')
         return redirect(url_for('cart.kosik'))
 
+    delivery_info = session.get('delivery_info')
+    if not delivery_info:
+        flash('Nejdříve vyplň doručovací údaje', 'warning')
+        return redirect(url_for('cart.delivery'))
+
     total = sum(item.product.cena * item.quantity for item in items)
 
     if request.method == 'POST':
-        card = request.form['card_number']
-        month = request.form['exp_month']
-        year = request.form['exp_year']
-        cvc = request.form['cvc']
+        card = request.form['card_number'].strip()
+        month = request.form['exp_month'].strip()
+        year = request.form['exp_year'].strip()
+        cvc = request.form['cvc'].strip()
 
         # validace čísla karty
         if not card.isdigit() or len(card) != 16:
             flash('Neplatné číslo karty', 'danger')
-            return redirect(url_for('cart.checkout'))
+            return render_template('checkout.html', total=total, delivery=delivery_info)
 
         # validace CVC
         if not cvc.isdigit() or len(cvc) != 3:
             flash('Neplatný CVC kód', 'danger')
-            return redirect(url_for('cart.checkout'))
+            return render_template('checkout.html', total=total, delivery=delivery_info)
 
         try:
             month = int(month)
             year = int(year)
         except ValueError:
             flash('Neplatné datum expirace', 'danger')
-            return redirect(url_for('cart.checkout'))
+            return render_template('checkout.html', total=total, delivery=delivery_info)
 
         if month < 1 or month > 12:
             flash('Neplatný měsíc expirace', 'danger')
-            return redirect(url_for('cart.checkout'))
+            return render_template('checkout.html', total=total, delivery=delivery_info)
 
-        from datetime import datetime
         now = datetime.now()
         if year < now.year or (year == now.year and month < now.month):
             flash('Karta je expirovaná', 'danger')
-            return redirect(url_for('cart.checkout'))
+            return render_template('checkout.html', total=total, delivery=delivery_info)
 
         # SIMULACE ÚSPĚŠNÉ PLATBY
         order = Order(
@@ -124,13 +163,13 @@ def checkout():
 
         db.session.commit()
 
+        # smažeme uložené doručovací údaje po dokončení objednávky
+        session.pop('delivery_info', None)
+
         flash('Platba proběhla úspěšně ✔', 'success')
         return redirect(url_for('auth.account'))
 
-    # ⬇⬇⬇ TENHLE ŘÁDEK TAM MUSÍ BÝT ⬇⬇⬇
-    return render_template('checkout.html', total=total)
-
-
+    return render_template('checkout.html', total=total, delivery=delivery_info)
 
 
 @cart_bp.route('/order/<int:order_id>/invoice')
@@ -146,5 +185,3 @@ def invoice(order_id):
         return redirect(url_for('auth.account'))
 
     return render_template('invoice.html', order=order)
-
-

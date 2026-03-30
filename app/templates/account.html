@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Můj účet – CHRONO</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style2.css') }}">
 </head>
 <body>
 <nav class="navbar">
@@ -78,6 +79,9 @@
                     <a href="{{ url_for('cart.invoice', order_id=order.id) }}" class="invoice-link">
                         Zobrazit fakturu
                     </a>
+                    <a href="{{ url_for('cart.download_invoice', order_id=order.id) }}" class="invoice-link">
+            Stáhnout fakturu
+        </a>
                 </div>
 
             </div>

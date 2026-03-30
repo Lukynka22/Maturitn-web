@@ -31,15 +31,23 @@
 
     <table class="invoice-table">
         <tr>
-            <th>Popis</th>
-            <th>Cena</th>
+            <th>Produkt</th>
+            <th>Ks</th>
+            <th>Cena za kus</th>
+            <th>Celkem</th>
         </tr>
+
+        {% for item in order.items %}
         <tr>
-            <td>Objednávka CHRONO</td>
-            <td>{{ order.total_price }} Kč</td>
+            <td>{{ item.product_name }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.unit_price }} Kč</td>
+            <td>{{ item.total_price }} Kč</td>
         </tr>
+        {% endfor %}
+
         <tr class="total-row">
-            <td>Celkem</td>
+            <td colspan="3">Celkem</td>
             <td>{{ order.total_price }} Kč</td>
         </tr>
     </table>

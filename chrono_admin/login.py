@@ -1,23 +1,12 @@
-"""
-Login okno pro admin aplikaci
-"""
-
-from admin_panel import AdminPanel
-
 from PyQt5.QtWidgets import (
     QWidget, QLabel, QLineEdit,
     QPushButton, QVBoxLayout, QMessageBox
 )
+from werkzeug.security import check_password_hash
+from database import get_connection
 
 
 class LoginWindow(QWidget):
-    """
-    Okno pro přihlášení admina.
-    """
-
-    ADMIN_USERNAME = "admin"
-    ADMIN_PASSWORD = "admin2007"
-
     def __init__(self):
         super().__init__()
         self.init_ui()
@@ -46,18 +35,31 @@ class LoginWindow(QWidget):
         self.setLayout(layout)
 
     def login(self):
+        from admin_panel import AdminPanel
+
         username = self.username_input.text().strip()
         password = self.password_input.text()
 
-        if username != self.ADMIN_USERNAME:
-            QMessageBox.warning(self, "Chyba", "Špatné uživatelské jméno")
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT * FROM user WHERE username=%s", (username,))
+        user = cursor.fetchone()
+        conn.close()
+
+        if not user:
+            QMessageBox.warning(self, "Chyba", "Uživatel neexistuje")
             return
 
-        if password != self.ADMIN_PASSWORD:
+        if not check_password_hash(user["password"], password):
             QMessageBox.warning(self, "Chyba", "Špatné heslo")
             return
 
-        QMessageBox.information(self, "OK", "Přihlášení úspěšné (admin)")
+        if not user["is_admin"]:
+            QMessageBox.warning(self, "Chyba", "Nemáš oprávnění pro admin panel")
+            return
+
+        QMessageBox.information(self, "OK", "Přihlášení úspěšné")
         self.admin_panel = AdminPanel()
         self.admin_panel.show()
         self.close()

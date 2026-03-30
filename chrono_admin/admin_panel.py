@@ -1,131 +1,178 @@
 """
-Admin panel – správa hodinek a uživatelů
+Admin panel – produkty, uživatelé, statistika
 """
 
 from PyQt5.QtWidgets import (
-    QWidget, QVBoxLayout, QLabel,
-    QTableWidget, QTableWidgetItem,
-    QHBoxLayout, QPushButton,
-    QLineEdit, QMessageBox, QTextEdit,
-    QTabWidget
+    QWidget, QVBoxLayout, QLabel, QTableWidget, QTableWidgetItem,
+    QHBoxLayout, QPushButton, QLineEdit, QMessageBox,
+    QTextEdit, QTabWidget, QComboBox
 )
 
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
+
 from database import get_connection
+from datetime import datetime
 
 
 class AdminPanel(QWidget):
-
     def __init__(self):
         super().__init__()
-        self.init_ui()
-        self.load_products()
-        self.load_users()
-
-    def init_ui(self):
-
         self.setWindowTitle("CHRONO Admin Panel")
         self.setGeometry(300, 150, 1200, 700)
 
+        self.tabs = QTabWidget()
+        self.init_ui()
+
+        self.load_products()
+        self.load_users()
+        self.load_years()
+        self.load_statistics()
+
+    # =================================================
+    # UI
+    # =================================================
+
+    def init_ui(self):
         layout = QVBoxLayout()
-        tabs = QTabWidget()
+        layout.addWidget(self.tabs)
+        self.setLayout(layout)
 
-        # =================================================
-        # TAB 1 – PRODUKTY
-        # =================================================
+        self.tabs.addTab(self.create_products_tab(), "Produkty")
+        self.tabs.addTab(self.create_users_tab(), "Uživatelé")
+        self.tabs.addTab(self.create_stats_tab(), "Statistika")
 
-        products_tab = QWidget()
-        products_layout = QVBoxLayout()
+    def create_products_tab(self):
+        tab = QWidget()
+        layout = QVBoxLayout()
 
-        title = QLabel("Správa hodinek")
-        title.setStyleSheet("font-size:18px; font-weight:bold;")
-        products_layout.addWidget(title)
+        layout.addWidget(self.make_title("Správa hodinek"))
 
         form = QHBoxLayout()
-
-        self.name_input = QLineEdit()
-        self.name_input.setPlaceholderText("Název")
-
-        self.price_input = QLineEdit()
-        self.price_input.setPlaceholderText("Cena")
-
-        self.stock_input = QLineEdit()
-        self.stock_input.setPlaceholderText("Skladem")
-
-        self.image_input = QLineEdit()
-        self.image_input.setPlaceholderText("Cesta k obrázku")
+        self.name_input = self.make_input("Název")
+        self.price_input = self.make_input("Cena")
+        self.stock_input = self.make_input("Skladem")
+        self.image_input = self.make_input("Cesta k obrázku")
 
         add_btn = QPushButton("Přidat produkt")
         add_btn.clicked.connect(self.add_product)
 
-        form.addWidget(self.name_input)
-        form.addWidget(self.price_input)
-        form.addWidget(self.stock_input)
-        form.addWidget(self.image_input)
-        form.addWidget(add_btn)
+        for w in [self.name_input, self.price_input, self.stock_input, self.image_input, add_btn]:
+            form.addWidget(w)
 
-        products_layout.addLayout(form)
+        layout.addLayout(form)
 
         self.desc_input = QTextEdit()
         self.desc_input.setPlaceholderText("Popis")
-        products_layout.addWidget(self.desc_input)
+        layout.addWidget(self.desc_input)
 
         self.table = QTableWidget()
         self.table.setColumnCount(7)
         self.table.setHorizontalHeaderLabels([
             "ID", "Název", "Cena", "Skladem", "Popis", "Kategorie", "Akce"
         ])
-        self.table.setEditTriggers(QTableWidget.DoubleClicked)
         self.table.cellChanged.connect(self.update_product_cell)
 
-        products_layout.addWidget(QLabel("Produkty v databázi"))
-        products_layout.addWidget(self.table)
+        layout.addWidget(QLabel("Produkty v databázi"))
+        layout.addWidget(self.table)
 
-        products_tab.setLayout(products_layout)
+        tab.setLayout(layout)
+        return tab
 
-        # =================================================
-        # TAB 2 – UŽIVATELÉ
-        # =================================================
+    def create_users_tab(self):
+        tab = QWidget()
+        layout = QVBoxLayout()
 
-        users_tab = QWidget()
-        users_layout = QVBoxLayout()
-
-        users_title = QLabel("Registrovaní uživatelé")
-        users_title.setStyleSheet("font-size:18px; font-weight:bold;")
-        users_layout.addWidget(users_title)
+        layout.addWidget(self.make_title("Registrovaní uživatelé"))
 
         self.users_table = QTableWidget()
         self.users_table.setColumnCount(5)
         self.users_table.setHorizontalHeaderLabels([
             "ID", "Username", "Email", "Avatar", "Akce"
         ])
-        self.users_table.setEditTriggers(QTableWidget.DoubleClicked)
         self.users_table.cellChanged.connect(self.update_user_cell)
 
-        users_layout.addWidget(self.users_table)
-        users_tab.setLayout(users_layout)
+        layout.addWidget(self.users_table)
+        tab.setLayout(layout)
+        return tab
 
-        # =================================================
+    def create_stats_tab(self):
+        tab = QWidget()
+        layout = QVBoxLayout()
 
-        tabs.addTab(products_tab, "Produkty")
-        tabs.addTab(users_tab, "Uživatelé")
+        layout.addWidget(self.make_title("Statistika objednávek"))
 
-        layout.addWidget(tabs)
-        self.setLayout(layout)
+        controls = QHBoxLayout()
+
+        self.year_combo = QComboBox()
+        self.month_combo = QComboBox()
+
+        self.month_combo.addItem("Celý rok", 0)
+        for i, month in enumerate([
+            "Leden", "Únor", "Březen", "Duben", "Květen", "Červen",
+            "Červenec", "Srpen", "Září", "Říjen", "Listopad", "Prosinec"
+        ], start=1):
+            self.month_combo.addItem(month, i)
+
+        load_btn = QPushButton("Načíst graf")
+        load_btn.clicked.connect(self.load_statistics)
+
+        controls.addWidget(QLabel("Rok:"))
+        controls.addWidget(self.year_combo)
+        controls.addWidget(QLabel("Období:"))
+        controls.addWidget(self.month_combo)
+        controls.addWidget(load_btn)
+
+        layout.addLayout(controls)
+
+        self.stats_label = QLabel("")
+        self.stats_label.setStyleSheet("font-size: 15px; font-weight: bold; margin: 8px 0;")
+        layout.addWidget(self.stats_label)
+
+        self.figure = Figure()
+        self.canvas = FigureCanvas(self.figure)
+        layout.addWidget(self.canvas)
+
+        tab.setLayout(layout)
+        return tab
+
+    # =================================================
+    # HELPERS
+    # =================================================
+
+    def make_title(self, text):
+        label = QLabel(text)
+        label.setStyleSheet("font-size:18px; font-weight:bold;")
+        return label
+
+    def make_input(self, placeholder):
+        inp = QLineEdit()
+        inp.setPlaceholderText(placeholder)
+        return inp
+
+    def fetch_all(self, query, params=()):
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute(query, params)
+        data = cursor.fetchall()
+        conn.close()
+        return data
+
+    def execute_query(self, query, params=()):
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute(query, params)
+        conn.commit()
+        conn.close()
 
     # =================================================
     # PRODUKTY
     # =================================================
 
     def load_products(self):
-
-        conn = get_connection()
-        cursor = conn.cursor()
-
-        cursor.execute(
+        products = self.fetch_all(
             "SELECT id, nazev, cena, skladem, popis, kategorie FROM product"
         )
-        products = cursor.fetchall()
-        conn.close()
 
         self.table.blockSignals(True)
         self.table.setRowCount(len(products))
@@ -138,16 +185,13 @@ class AdminPanel(QWidget):
             self.table.setItem(r, 4, QTableWidgetItem(product["popis"] or ""))
             self.table.setItem(r, 5, QTableWidgetItem(product["kategorie"] or ""))
 
-            delete_btn = QPushButton("Smazat")
-            delete_btn.clicked.connect(
-                lambda _, pid=product["id"]: self.delete_product(pid)
-            )
-            self.table.setCellWidget(r, 6, delete_btn)
+            btn = QPushButton("Smazat")
+            btn.clicked.connect(lambda _, pid=product["id"]: self.delete_product(pid))
+            self.table.setCellWidget(r, 6, btn)
 
         self.table.blockSignals(False)
 
     def add_product(self):
-
         name = self.name_input.text().strip()
         price = self.price_input.text().strip()
         stock = self.stock_input.text().strip()
@@ -165,10 +209,7 @@ class AdminPanel(QWidget):
             QMessageBox.warning(self, "Chyba", "Cena a sklad musí být číslo")
             return
 
-        conn = get_connection()
-        cursor = conn.cursor()
-
-        cursor.execute(
+        self.execute_query(
             """
             INSERT INTO product (nazev, cena, skladem, popis, image)
             VALUES (%s, %s, %s, %s, %s)
@@ -176,48 +217,27 @@ class AdminPanel(QWidget):
             (name, price, stock, desc, image)
         )
 
-        conn.commit()
-        conn.close()
-
         QMessageBox.information(self, "OK", "Produkt přidán")
 
-        self.name_input.clear()
-        self.price_input.clear()
-        self.stock_input.clear()
-        self.image_input.clear()
+        for inp in [self.name_input, self.price_input, self.stock_input, self.image_input]:
+            inp.clear()
         self.desc_input.clear()
 
         self.load_products()
 
     def delete_product(self, product_id):
-
-        conn = get_connection()
-        cursor = conn.cursor()
-
-        cursor.execute(
-            "DELETE FROM product WHERE id=%s",
-            (product_id,)
-        )
-
-        conn.commit()
-        conn.close()
-
+        self.execute_query("DELETE FROM product WHERE id=%s", (product_id,))
         QMessageBox.information(self, "OK", "Produkt smazán")
         self.load_products()
 
     def update_product_cell(self, row, column):
-
         if column in (0, 6):
             return
 
-        product_id_item = self.table.item(row, 0)
+        item_id = self.table.item(row, 0)
         value_item = self.table.item(row, column)
-
-        if product_id_item is None or value_item is None:
+        if not item_id or not value_item:
             return
-
-        product_id = product_id_item.text()
-        value = value_item.text()
 
         column_map = {
             1: "nazev",
@@ -230,6 +250,8 @@ class AdminPanel(QWidget):
         if column not in column_map:
             return
 
+        product_id = item_id.text()
+        value = value_item.text()
         column_name = column_map[column]
 
         try:
@@ -240,31 +262,17 @@ class AdminPanel(QWidget):
             self.load_products()
             return
 
-        conn = get_connection()
-        cursor = conn.cursor()
-
-        cursor.execute(
+        self.execute_query(
             f"UPDATE product SET {column_name}=%s WHERE id=%s",
             (value, product_id)
         )
-
-        conn.commit()
-        conn.close()
 
     # =================================================
     # UŽIVATELÉ
     # =================================================
 
     def load_users(self):
-
-        conn = get_connection()
-        cursor = conn.cursor()
-
-        cursor.execute(
-            "SELECT id, username, email, avatar FROM user"
-        )
-        users = cursor.fetchall()
-        conn.close()
+        users = self.fetch_all("SELECT id, username, email, avatar FROM user")
 
         self.users_table.blockSignals(True)
         self.users_table.setRowCount(len(users))
@@ -275,28 +283,20 @@ class AdminPanel(QWidget):
             self.users_table.setItem(r, 2, QTableWidgetItem(user["email"] or ""))
             self.users_table.setItem(r, 3, QTableWidgetItem(user["avatar"] or ""))
 
-            delete_btn = QPushButton("Smazat")
-            delete_btn.clicked.connect(
-                lambda _, uid=user["id"]: self.delete_user(uid)
-            )
-
-            self.users_table.setCellWidget(r, 4, delete_btn)
+            btn = QPushButton("Smazat")
+            btn.clicked.connect(lambda _, uid=user["id"]: self.delete_user(uid))
+            self.users_table.setCellWidget(r, 4, btn)
 
         self.users_table.blockSignals(False)
 
     def update_user_cell(self, row, column):
-
         if column in (0, 4):
             return
 
-        user_id_item = self.users_table.item(row, 0)
+        item_id = self.users_table.item(row, 0)
         value_item = self.users_table.item(row, column)
-
-        if user_id_item is None or value_item is None:
+        if not item_id or not value_item:
             return
-
-        user_id = user_id_item.text()
-        value = value_item.text()
 
         column_map = {
             1: "username",
@@ -307,21 +307,16 @@ class AdminPanel(QWidget):
         if column not in column_map:
             return
 
+        user_id = item_id.text()
+        value = value_item.text()
         column_name = column_map[column]
 
-        conn = get_connection()
-        cursor = conn.cursor()
-
-        cursor.execute(
+        self.execute_query(
             f"UPDATE user SET {column_name}=%s WHERE id=%s",
             (value, user_id)
         )
 
-        conn.commit()
-        conn.close()
-
     def delete_user(self, user_id):
-
         reply = QMessageBox.question(
             self,
             "Potvrzení",
@@ -333,16 +328,120 @@ class AdminPanel(QWidget):
         if reply != QMessageBox.Yes:
             return
 
-        conn = get_connection()
-        cursor = conn.cursor()
-
-        cursor.execute(
-            "DELETE FROM user WHERE id=%s",
-            (user_id,)
-        )
-
-        conn.commit()
-        conn.close()
-
+        self.execute_query("DELETE FROM user WHERE id=%s", (user_id,))
         QMessageBox.information(self, "OK", "Uživatel smazán")
         self.load_users()
+
+    # =================================================
+    # STATISTIKA
+    # =================================================
+
+    def load_years(self):
+        self.year_combo.clear()
+
+        try:
+            years = self.fetch_all("""
+                SELECT DISTINCT YEAR(created_at) AS year_value
+                FROM `order`
+                WHERE created_at IS NOT NULL
+                ORDER BY year_value DESC
+            """)
+        except Exception:
+            years = []
+
+        if years:
+            for row in years:
+                self.year_combo.addItem(str(row["year_value"]), row["year_value"])
+        else:
+            current_year = datetime.now().year
+            self.year_combo.addItem(str(current_year), current_year)
+
+    def load_statistics(self):
+        year = self.year_combo.currentData()
+        month = self.month_combo.currentData()
+
+        if year is None:
+            year = datetime.now().year
+
+        try:
+            if month == 0:
+                summary = self.fetch_all("""
+                    SELECT COUNT(*) AS total_orders,
+                           COALESCE(SUM(total_price), 0) AS total_revenue
+                    FROM `order`
+                    WHERE YEAR(created_at)=%s
+                """, (year,))[0]
+
+                rows = self.fetch_all("""
+                    SELECT MONTH(created_at) AS period_num,
+                           COALESCE(SUM(total_price), 0) AS revenue
+                    FROM `order`
+                    WHERE YEAR(created_at)=%s
+                    GROUP BY MONTH(created_at)
+                    ORDER BY MONTH(created_at)
+                """, (year,))
+
+                labels = ["Led", "Úno", "Bře", "Dub", "Kvě", "Čvn", "Čvc", "Srp", "Zář", "Říj", "Lis", "Pro"]
+                values = [0] * 12
+
+                for row in rows:
+                    values[row["period_num"] - 1] = float(row["revenue"])
+
+                self.stats_label.setText(
+                    f"Rok {year} | Objednávek: {summary['total_orders']} | Tržba: {summary['total_revenue']} Kč"
+                )
+
+            else:
+                summary = self.fetch_all("""
+                    SELECT COUNT(*) AS total_orders,
+                           COALESCE(SUM(total_price), 0) AS total_revenue
+                    FROM `order`
+                    WHERE YEAR(created_at)=%s AND MONTH(created_at)=%s
+                """, (year, month))[0]
+
+                rows = self.fetch_all("""
+                    SELECT DAY(created_at) AS period_num,
+                           COALESCE(SUM(total_price), 0) AS revenue
+                    FROM `order`
+                    WHERE YEAR(created_at)=%s AND MONTH(created_at)=%s
+                    GROUP BY DAY(created_at)
+                    ORDER BY DAY(created_at)
+                """, (year, month))
+
+                max_day = 31
+                labels = [str(i) for i in range(1, max_day + 1)]
+                values = [0] * max_day
+
+                for row in rows:
+                    values[row["period_num"] - 1] = float(row["revenue"])
+
+                self.stats_label.setText(
+                    f"{self.month_combo.currentText()} {year} | "
+                    f"Objednávek: {summary['total_orders']} | "
+                    f"Tržba: {summary['total_revenue']} Kč"
+                )
+
+            self.draw_chart(labels, values)
+
+        except Exception as e:
+            self.stats_label.setText("Statistika není dostupná.")
+            QMessageBox.warning(
+                self,
+                "Chyba statistiky",
+                "Nepodařilo se načíst statistiku.\n"
+                "Zkontroluj tabulku order a sloupce total_price, created_at.\n\n"
+                f"Detail: {e}"
+            )
+
+    def draw_chart(self, labels, values):
+        self.figure.clear()
+        ax = self.figure.add_subplot(111)
+
+        ax.bar(labels, values)
+        ax.set_title("Tržba")
+        ax.set_xlabel("Období")
+        ax.set_ylabel("Kč")
+        ax.tick_params(axis='x', rotation=45)
+
+        self.figure.tight_layout()
+        self.canvas.draw()

@@ -63,9 +63,9 @@
 
         <h3>{{ produkt.nazev }}</h3>
         <p class="price">{{ produkt.cena }} Kč</p>
-        <a href="{{ url_for('cart.add_to_cart', product_id=produkt.id) }}">
-            Přidat do košíku
-        </a>
+        <a href="{{ url_for('cart.add_to_cart', product_id=produkt.id) }}" class="add-to-cart-btn">
+    Přidat do košíku
+</a>
     </div>
     {% endfor %}
 </div>

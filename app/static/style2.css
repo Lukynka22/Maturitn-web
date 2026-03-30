@@ -282,3 +282,26 @@
 .back-to-top:hover {
     background: #ddd;
 }
+
+
+/* ====== stahovaní faktur vizual ====== */
+.invoice-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.invoice-link {
+    display: inline-block;
+    padding: 10px 16px;
+    background: black;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.invoice-link:hover {
+    background: #333;
+}

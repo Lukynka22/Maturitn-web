@@ -240,73 +240,6 @@ body { margin: 0; font-family: Arial, sans-serif; background: #f4f4f4; }
 
 
 
-
-/* doruceni a placeni */
-.delivery-container,
-.checkout-container {
-    max-width: 700px;
-    margin: 120px auto 40px;
-    background: white;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
-}
-
-.delivery-form,
-.payment-form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.delivery-form input,
-.delivery-form select,
-.delivery-form textarea,
-.payment-form input {
-    padding: 12px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    font-size: 15px;
-}
-
-.card-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 10px;
-}
-
-.checkout-btn,
-.pay-btn {
-    display: inline-block;
-    padding: 14px 20px;
-    background: black;
-    color: white;
-    text-decoration: none;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 16px;
-}
-
-.checkout-btn:hover,
-.pay-btn:hover {
-    opacity: 0.9;
-}
-
-.delivery-summary {
-    background: #f7f7f7;
-    border-radius: 10px;
-    padding: 20px;
-    margin-bottom: 20px;
-}
-
-.total-price {
-    font-size: 18px;
-    margin-bottom: 20px;
-}
-
-
-
 /* ===== Hodinky PAGE ===== */
 /* ZÁKLAD */
 body {
@@ -433,6 +366,86 @@ body {
         max-width: 150px;
     }
 }
+
+
+
+
+
+
+
+
+
+/* doruceni a placeni */
+.delivery-container,
+.checkout-container {
+    max-width: 700px;
+    margin: 120px auto 40px;
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+.delivery-form,
+.payment-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.delivery-form input,
+.delivery-form select,
+.delivery-form textarea,
+.payment-form input {
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 15px;
+}
+
+.card-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+}
+
+.checkout-btn,
+.pay-btn {
+    display: inline-block;
+    padding: 14px 20px;
+    background: black;
+    color: white;
+    text-decoration: none;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.checkout-btn:hover,
+.pay-btn:hover {
+    opacity: 0.9;
+}
+
+.delivery-summary {
+    background: #f7f7f7;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.total-price {
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+
+
+
+
+
+
+
 
 
 
@@ -685,15 +698,19 @@ body {
 /* patri k platební prane co dam po pokracovaní v kosiku*/
 .cart-actions {
     margin-top: 30px;
-    text-align: right;
+    display: flex;
+    justify-content: flex-end; /* posune doprava */
 }
 
 .checkout-btn {
     background: black;
     color: white;
-    padding: 14px 30px;
+    padding: 12px 24px;
     text-decoration: none;
     font-weight: bold;
+    border-radius: 6px;
+    display: inline-block; /* důležité → nebude přes celou šířku */
+    width: auto; /* jistota */
 }
 
 .checkout-btn:hover {
@@ -945,6 +962,7 @@ body {
     margin:20px 40px;
     font-size:14px;
     color:#777;
+    margin: 85px 40px 20px 40px;
 }
 
 .breadcrumb a{
@@ -1172,4 +1190,19 @@ color:white;
 
 .avatar-form button:hover {
     opacity: 0.9;
+}
+
+
+.add-to-cart-btn {
+    display: inline-block;
+    background: #000;
+    color: #fff;
+    text-decoration: none;
+    padding: 10px 16px;
+    border-radius: 7px;
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.2;
+    text-align: center;
+    border: none;
 }

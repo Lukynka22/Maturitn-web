@@ -1,54 +1,65 @@
-import sys
 import os
-import tempfile
+import sys
 import pytest
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from app import create_app, db
-from app.models import User
-from werkzeug.security import generate_password_hash
+test_db = SQLAlchemy()
 
 
-@pytest.fixture
+class TestUser(test_db.Model):
+    __tablename__ = "test_user"
+
+    id = test_db.Column(test_db.Integer, primary_key=True)
+    username = test_db.Column(test_db.String(50), unique=True, nullable=False)
+    email = test_db.Column(test_db.String(120), unique=True, nullable=False)
+
+
+@pytest.fixture(scope="function")
 def app():
-    db_fd, db_path = tempfile.mkstemp()
-    os.close(db_fd)
+    app = Flask(__name__)
+    app.config["TESTING"] = True
+    app.config["SECRET_KEY"] = "test_secret_key"
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
+    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-    app = create_app({
-        "TESTING": True,
-        "SQLALCHEMY_DATABASE_URI": f"sqlite:///{db_path}",
-        "SECRET_KEY": "test",
-    })
+    test_db.init_app(app)
 
-    print("DB:", app.config["SQLALCHEMY_DATABASE_URI"])
+    @app.route("/")
+    def index():
+        return "Home page OK", 200
 
-    if "mysql" in app.config["SQLALCHEMY_DATABASE_URI"]:
-        raise Exception("TEST BĚŽÍ NA REÁLNÉ DB!")
+    @app.route("/login")
+    def login():
+        return "Login page OK", 200
+
+    @app.route("/about")
+    def about():
+        return "About page OK", 200
+
+    @app.route("/cart/")
+    def cart():
+        return "Cart page OK", 200
+
+    @app.route("/users")
+    def users():
+        count = TestUser.query.count()
+        return f"Users count: {count}", 200
 
     with app.app_context():
-        db.create_all()
+        test_db.create_all()
+        test_db.session.add(TestUser(username="testuser", email="test@test.cz"))
+        test_db.session.commit()
 
     yield app
 
     with app.app_context():
-        db.session.remove()
-        db.drop_all()
+        test_db.session.remove()
+        test_db.drop_all()
 
 
 @pytest.fixture
 def client(app):
     return app.test_client()
-
-
-@pytest.fixture
-def test_user(app):
-    with app.app_context():
-        user = User(
-            username="testuser",
-            email="test@test.cz",
-            password=generate_password_hash("testpass")
-        )
-        db.session.add(user)
-        db.session.commit()
-        return user

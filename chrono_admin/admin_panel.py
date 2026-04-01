@@ -1,18 +1,20 @@
 """
-Admin panel – produkty, uživatelé, statistika
+Admin panel – produkty, uživatelé, statistika + import produktů z CSV
 """
+
+import csv
+from datetime import datetime
 
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QLabel, QTableWidget, QTableWidgetItem,
     QHBoxLayout, QPushButton, QLineEdit, QMessageBox,
-    QTextEdit, QTabWidget, QComboBox
+    QTextEdit, QTabWidget, QComboBox, QFileDialog
 )
 
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 
 from database import get_connection
-from datetime import datetime
 
 
 class AdminPanel(QWidget):
@@ -57,7 +59,17 @@ class AdminPanel(QWidget):
         add_btn = QPushButton("Přidat produkt")
         add_btn.clicked.connect(self.add_product)
 
-        for w in [self.name_input, self.price_input, self.stock_input, self.image_input, add_btn]:
+        import_btn = QPushButton("Import CSV")
+        import_btn.clicked.connect(self.import_products_csv)
+
+        for w in [
+            self.name_input,
+            self.price_input,
+            self.stock_input,
+            self.image_input,
+            add_btn,
+            import_btn
+        ]:
             form.addWidget(w)
 
         layout.addLayout(form)
@@ -224,6 +236,79 @@ class AdminPanel(QWidget):
         self.desc_input.clear()
 
         self.load_products()
+
+    def import_products_csv(self):
+        file_path, _ = QFileDialog.getOpenFileName(
+            self,
+            "Vyber CSV soubor s produkty",
+            "",
+            "CSV Files (*.csv)"
+        )
+
+        if not file_path:
+            return
+
+        imported_count = 0
+
+        try:
+            conn = get_connection()
+            cursor = conn.cursor()
+
+            with open(file_path, "r", encoding="utf-8-sig", newline="") as file:
+                reader = csv.DictReader(file, delimiter=';')
+
+                required_columns = {"nazev", "cena", "skladem", "popis", "image", "kategorie"}
+                if not reader.fieldnames or not required_columns.issubset(set(reader.fieldnames)):
+                    QMessageBox.warning(
+                        self,
+                        "Chyba",
+                        "CSV musí obsahovat sloupce: nazev; cena; skladem; popis; image; kategorie"
+                    )
+                    conn.close()
+                    return
+
+                for row in reader:
+                    name = (row.get("nazev") or "").strip()
+                    price = (row.get("cena") or "").strip()
+                    stock = (row.get("skladem") or "").strip()
+                    desc = (row.get("popis") or "").strip()
+                    image = (row.get("image") or "").strip()
+                    category = (row.get("kategorie") or "").strip()
+
+                    if not name or not price or not stock:
+                        continue
+
+                    try:
+                        price = int(price)
+                        stock = int(stock)
+                    except ValueError:
+                        continue
+
+                    cursor.execute(
+                        """
+                        INSERT INTO product (nazev, cena, skladem, popis, image, kategorie)
+                        VALUES (%s, %s, %s, %s, %s, %s)
+                        """,
+                        (name, price, stock, desc, image, category)
+                    )
+                    imported_count += 1
+
+            conn.commit()
+            conn.close()
+
+            QMessageBox.information(
+                self,
+                "Import hotov",
+                f"Bylo importováno {imported_count} produktů."
+            )
+            self.load_products()
+
+        except Exception as e:
+            QMessageBox.warning(
+                self,
+                "Chyba importu",
+                f"Nepodařilo se importovat CSV.\n\nDetail: {str(e)}"
+            )
 
     def delete_product(self, product_id):
         self.execute_query("DELETE FROM product WHERE id=%s", (product_id,))

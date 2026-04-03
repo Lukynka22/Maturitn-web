@@ -39,12 +39,21 @@ def add_to_cart(product_id):
         flash('Nejdříve se přihlaš', 'warning')
         return redirect(url_for('auth.login'))
 
+    product = Product.query.get_or_404(product_id)
+
+    if product.skladem <= 0:
+        flash('Produkt není skladem', 'danger')
+        return redirect(url_for('main.hodinky'))
+
     item = CartItem.query.filter_by(
         user_id=session['user_id'],
         product_id=product_id
     ).first()
 
     if item:
+        if item.quantity + 1 > product.skladem:
+            flash('Nelze přidat více kusů, než je skladem', 'warning')
+            return redirect(url_for('main.hodinky'))
         item.quantity += 1
     else:
         item = CartItem(
@@ -197,31 +206,51 @@ def checkout():
             flash('CVC může mít maximálně 3 číslice', 'danger')
             return render_template('checkout.html', total=total, delivery=delivery_info)
 
-        order = Order(
-            user_id=session['user_id'],
-            total_price=total,
-            created_at=datetime.now()
-        )
-        db.session.add(order)
-        db.session.flush()
-
         for item in items:
-            order_item = OrderItem(
-                order_id=order.id,
-                product_name=item.product.nazev,
-                quantity=item.quantity,
-                unit_price=item.product.cena,
-                total_price=item.product.cena * item.quantity
+            product = Product.query.get(item.product_id)
+
+            if not product:
+                flash('Některý produkt už neexistuje', 'danger')
+                return redirect(url_for('cart.kosik'))
+
+            if product.skladem < item.quantity:
+                flash(f'Produkt "{product.nazev}" nemá dost kusů skladem', 'danger')
+                return redirect(url_for('cart.kosik'))
+
+        try:
+            order = Order(
+                user_id=session['user_id'],
+                total_price=total,
+                created_at=datetime.now()
             )
-            db.session.add(order_item)
-            db.session.delete(item)
+            db.session.add(order)
+            db.session.flush()
 
-        db.session.commit()
+            for item in items:
+                product = Product.query.get(item.product_id)
 
-        session.pop('delivery_info', None)
+                product.skladem -= item.quantity
 
-        flash('Platba proběhla úspěšně ✔', 'success')
-        return redirect(url_for('auth.account'))
+                order_item = OrderItem(
+                    order_id=order.id,
+                    product_name=product.nazev,
+                    quantity=item.quantity,
+                    unit_price=product.cena,
+                    total_price=product.cena * item.quantity
+                )
+                db.session.add(order_item)
+                db.session.delete(item)
+
+            db.session.commit()
+            session.pop('delivery_info', None)
+
+            flash('Platba proběhla úspěšně ✔', 'success')
+            return redirect(url_for('auth.account'))
+
+        except Exception:
+            db.session.rollback()
+            flash('Při zpracování objednávky nastala chyba', 'danger')
+            return redirect(url_for('cart.checkout'))
 
     return render_template('checkout.html', total=total, delivery=delivery_info)
 

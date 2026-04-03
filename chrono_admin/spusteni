@@ -1,3 +1,4 @@
+Admin app (ta se spouští otevřením složky chrono_admin a tam musíte zapnout main.py - pak se spustí login který je user: admin, passwd:Admiin1234_ je to nastavené v databázi)
 Admin je označený v databázi jako is_admin ---> 1
 tedy user: admin
      passwd: Admin1234_

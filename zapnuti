@@ -15,6 +15,7 @@ matplotlib
 
 
 Testy: 
+stahnout: pytest
 python -m pytest tests -v
 
 pro spustení programu bežte do run.py a zapnete ho tím se Vám spustí stránka 

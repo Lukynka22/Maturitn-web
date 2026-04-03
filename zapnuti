@@ -1,0 +1,33 @@
+Nainstalujte potřebné balíčky z requirements.txt nebo níže vám vypiší, co si stahnout:
+
+Co stáhnout
+Pro spuštění run.py (tedy spuštění samotné stránky):
+
+Flask
+flask-sqlalchemy
+pymysql
+fpdf2
+
+Admin app (ta se spouští otevřením složky chrono_admin a tam musíte zapnout main.py - pak se spustí login který je user: admin, passwd:Admin1234_ je to nastavené v databázi)
+
+pyqt5
+matplotlib
+
+
+Testy: 
+python -m pytest tests -v
+
+pro spustení programu bežte do run.py a zapnete ho tím se Vám spustí stránka 
+až budete chtít zapnout admin app bežte do --- chrono_admin tam do main.py a tento soubor spustě user: admin passwd:Admin1234_
+tim by to mělo byt vše zapnuté testy jsou zde nebo v zalozce tests rozepsane jak zapout
+
+
+
+
+
+Musíte stahnout knihovny všechny bud co jsou v requirements.txt nebo ve wordu co jsem vám poslal na Bakaláře
+spouští se run.py
+Flask
+flask-sqlalchemy
+pymysql
+fpdf2

@@ -1,6 +1,0 @@
-Musíte stahnout knihovny všechny bud co jsou v requirements.txt nebo ve wordu co jsem vám poslal na Bakaláře
-spouští se run.py
-Flask
-flask-sqlalchemy
-pymysql
-fpdf2

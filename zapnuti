@@ -1,4 +1,4 @@
-Nainstalujte potřebné balíčky z knihovna.txt nebo (requirements.txt) spis ale knihovna.txt a nebo níže vám vypiší, co si stahnout:
+Nainstalujte potřebné balíčky z knihovna.txt (   pip install -r knihovna.txt   ) nebo (requirements.txt) spis ale knihovna.txt a nebo níže vám vypiší, co si stahnout:
 
 Co stáhnout
 Pro spuštění run.py (tedy spuštění samotné stránky):

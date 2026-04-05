@@ -14,9 +14,9 @@ pyqt5
 matplotlib
 
 
-Testy: 
+Testy (do terminalu): 
 stahnout: pytest
-python -m pytest tests -v
+zadat toto do terminalu a probehnou testy ---->  python -m pytest tests -v
 
 pro spustení programu bežte do run.py a zapnete ho tím se Vám spustí stránka 
 až budete chtít zapnout admin app bežte do --- chrono_admin tam do main.py a tento soubor spustě user: admin passwd:Admin1234_
